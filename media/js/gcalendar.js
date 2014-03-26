@@ -1,14 +1,20 @@
 // Require:
 // jQuery
 // jQuery UI Draggable, Droppable
+// gCalendar.Time.js
 
 function gCalendar(param) {
-    var i;
+    var _this = this,
+        today = new Date(),
+        i;
 
     this._data = [];
 
     // все dom элементы
     this._html = {};
+
+    // дни в календаре
+    this._days = {};
 
     if (typeof param === 'object') {
         if (param.parent) {
@@ -39,21 +45,32 @@ function gCalendar(param) {
         // количество дней в ширине календаря
         this._daysLength = param.daysLength || 3;
 
-        // установка элементво из данных
-        /*if (typeof param.data !== 'undefined') {
-            if (param.data instanceof Array) {
-                for (i = 0; i < param.data.length; i++) {
-                    this._initItem(param.data[i]);
-                }
-            }
-        }*/
+        // первый день календаря
+        if (param.firstDay instanceof Date) {
+            this._days.first = new Date(param.firstDay.getFullYear(), param.firstDay.getMonth(), param.firstDay.getDate());
+        } else {
+            this._days.first = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        }
     }
+
+    // счетчик дней (увеличивается дата)
+    this._countDateDay = (function() {
+        var count = new Date(_this._days.first);
+        return function() {
+                var t = new Date(count);
+                count.setDate(count.getDate() + 1);
+                return t;
+            };
+    })();
 
     // все интервалы в календаре
     this._allIntervals = {};
 
     // количество временных интервалов в дне календаря
     this._intervalLength = Math.ceil(this._timeBounds.start.getDifferenceWith(this._timeBounds.end).getFullMinutes() / this._timeInterval);
+
+    // все мероприятия каледаря
+    this.allActions = {};
 
     this._UIInit();
 
@@ -77,8 +94,6 @@ gCalendar.prototype._countIdInterval = (function() {
 gCalendar.prototype._UIInit = function() {
     var i, j, s;
 
-    // дни в календаре
-    this._days = {};
     this._days.html = $('<table><tbody><tr></tr></tbody></table>', {'class': 'gcalendar-tabledays'});
     this._days.htmlTr = this._days.html.find('tr');
 
@@ -103,6 +118,7 @@ gCalendar.prototype._UIInitOneDay = function() {
 
     day.id = this._countIdDay();
     day.html = $('<td />', {'class': 'gcalendar-day'});
+    day.date = this._countDateDay();
 
     day.intervals = {};
 
@@ -110,8 +126,15 @@ gCalendar.prototype._UIInitOneDay = function() {
         this._UIInitOneInterval(day);
     }
 
+    day.firstIntervalNumber = Number(Object.keys(day.intervals)[0]);
+
     this._days.array[day.id] = day;
     this._days.htmlTr.append(day.html);
+
+    // TODO: Убрать!
+    day.html.click(function(ev) {
+        console.log(day);
+    });
 };
 
 gCalendar.prototype._UIInitOneInterval = function(day) {
@@ -121,7 +144,7 @@ gCalendar.prototype._UIInitOneInterval = function(day) {
     interval.html = $('<div />', {'class': 'gcalendar-interval'});
     interval.day = day;
 
-    // добавить интервал в список всех интрвалов календаря
+    // добавить интервал в список всех интервалов календаря
     this._allIntervals[interval.id] = interval;
 
     // добавить интервал в список интервалов дня
@@ -161,4 +184,16 @@ gCalendar.prototype._draw = function() {
 
     // прорисовка дней с интервалами
     this._html.parent.append(this._days.html);
+};
+
+gCalendar.prototype.addAction = function(param) {
+    var action = new gCalendar.Action(param);
+
+    action.addTo(this);
+
+    return action;
+};
+
+gCalendar.prototype.getDays = function() {
+    return this.days;
 };

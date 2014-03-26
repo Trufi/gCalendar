@@ -1,5 +1,9 @@
 // Require:
-// gcalendar.js
+// none!
+
+if (typeof gCalendar === 'undefined') {
+    gCalendar = {};
+}
 
 // класс времени
 gCalendar.Time = function(param, param2) {
@@ -96,6 +100,19 @@ gCalendar.Time.prototype.getDifferenceWith = function(antime) {
         b = antime.getFullMinutes();
 
         return new gCalendar.Time(Math.abs(b - a));
+    } else {
+        return false;
+    }
+};
+
+gCalendar.Time.prototype.isEqual = function(antime) {
+    var a, b;
+
+    if (antime instanceof gCalendar.Time) {
+        a = this.getFullMinutes();
+        b = antime.getFullMinutes();
+
+        return (a === b);
     } else {
         return false;
     }
