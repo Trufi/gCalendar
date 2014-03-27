@@ -32,10 +32,11 @@ a:hover {text-decoration: none;}
 /* gCalendar
 ------------------------------------------------ */
 .gcalendar {}
-.gcalendar-interval {border-bottom: 1px dashed #000; width: 70px; height: 25px;}
+.gcalendar-interval {position: relative; border-bottom: 1px dashed #000; width: 70px; height: 25px;}
 .gcalendar-day {border-right: 1px solid #000;}
 
 .gcalendar-dragitem {width: 70px; height: 25px; background: red;}
 
-.gcalendar-wrapintervals {margin-top: -2px; border: 1px solid red; background: #66c05d; cursor: pointer;}
-.gcalendar-wrapintervals .gcalendar-interval {width: 68px;}
+.gcalendar-wrapintervals {position: absolute; top: -1px; left: -1px; border: 1px solid #000; background: #66c05d; cursor: pointer; z-index: 5;}
+.gcalendar-wrapintervals-draggable {border-color: red;}
+.gcalendar-wrapintervals .gcalendar-interval {border-bottom: 0; width: 70px; height: 26px;}

@@ -106,31 +106,33 @@ gCalendar.Action.prototype._calendarIntervalsBusy = function() {
 };
 
 gCalendar.Action.prototype._calendarIntervalsHtmlBusy = function() {
-    var $wrap = $('<div />', {'class': 'gcalendar-wrapintervals'}),
-        setOfIntervals = $(),
-        i, el;
+    var i, el;
 
     this._intervals = {};
+    this._wrapIntervals = $('<div />', {'class': 'gcalendar-wrapintervals'});
 
     for (i = 0; i < this._numberIntervals; i++) {
         el = this._calDay.intervals[i + this._calFirstInterval.id];
 
-        setOfIntervals = setOfIntervals.add(el.html);
+        this._wrapIntervals.append('<div class="gcalendar-interval"></div>')
+
         el.actionId = this.id;
         this._intervals[i + this._calFirstInterval.id] = el;
     }
 
-    setOfIntervals.wrapAll($wrap);
-    this._wrapIntervals = setOfIntervals.parent();
+    this._calFirstInterval.html.append(this._wrapIntervals);
 
-    this._wrapIntervals.draggable({
-        helper: 'clone',
-        opacity: 0.3,
-        // grid: [71, 26],
-        cursorAt: {top: 5, left: 35},
-        start: this._initDroppable.bind(this),
-        stop: this._stopDroppable.bind(this)
-    });
+    this._wrapIntervals
+        .draggable({
+            // helper: 'clone',
+            opacity: 0.3,
+            revert: true,
+            // grid: [71, 26],
+            cursorAt: {top: 5, left: 35},
+            start: this._initDroppable.bind(this),
+            stop: this._stopDroppable.bind(this),
+            zIndex: 15
+        });
 };
 
 gCalendar.Action.prototype._calendarIntervalsHtmlFree = function() {
@@ -154,6 +156,9 @@ gCalendar.Action.prototype._calendarIntervalsHtmlFree = function() {
 gCalendar.Action.prototype._initDroppable = function() {
     var daysArr, intArr, i, j, el;
 
+
+    this._wrapIntervals.addClass('gcalendar-wrapintervals-draggable');
+
     daysArr = this._calendar._days.array;
     for (i in daysArr) {
         intArr = daysArr[i].intervals;
@@ -167,7 +172,8 @@ gCalendar.Action.prototype._initDroppable = function() {
 };
 
 gCalendar.Action.prototype._initIntervalDroppable = function(interval) {
-    var isFail = false,
+    var _this = this,
+        isFail = false,
         intervalsInDay = interval.day.intervals,
         i;
 
@@ -179,13 +185,7 @@ gCalendar.Action.prototype._initIntervalDroppable = function(interval) {
     }
 
     if (!isFail) {
-        interval.isDroppable = true;
-        interval.html.droppable({
-            tolerance: 'pointer',
-            drop: function() {
-                console.log('drop ' + interval.time.getString());
-            }
-        });
+        this._startDroppable(interval);
     }
 };
 
@@ -195,31 +195,43 @@ gCalendar.Action.prototype._initSelfDroppable = function() {
         i, el, id;
 
     // первый интервал не droppable
+    // идём вниз
     for (i = 1; i < this._numberIntervals; i++) {
-        id = i + firstIntervalNumber + this._numberIntervals;
+        id = i + firstIntervalNumber + this._numberIntervals - 1;
 
         if ((typeof intervalsInDay[id] === 'undefined') || (typeof intervalsInDay[id].actionId !== 'undefined')) {
             break;
         } else {
-            el = intervalsInDay[i + firstIntervalNumber];
-
-            el.isDroppable = true;
-            el.html.droppable({
-                tolerance: 'pointer',
-                drop: function() {
-                    console.log('drop ' + el.time.getString());
-                }
-            });
+            this._startDroppable(intervalsInDay[i + firstIntervalNumber]);
         }
     }
 
-    // TODO: draggable сам в себя НЕ работает!
-    // Делать не врап, а вставлять внутрь с позицианированием?
+    // идём наверх
+    for (i = 1; i < this._numberIntervals; i++) {
+        id = firstIntervalNumber - i;
+
+        if ((typeof intervalsInDay[id] === 'undefined') || (typeof intervalsInDay[id].actionId !== 'undefined')) {
+            break;
+        } else {
+            this._startDroppable(intervalsInDay[id]);
+        }
+    }
+};
+
+gCalendar.Action.prototype._startDroppable = function(interval) {
+    interval.isDroppable = true;
+    interval.html
+        .droppable({
+            tolerance: 'pointer',
+            drop: this._intervalOnDrop.bind(this, interval)
+        });
 };
 
 // делает все интервалы в календаре не droppable
 gCalendar.Action.prototype._stopDroppable = function() {
     var daysArr, intArr, i, j;
+
+    this._wrapIntervals.removeClass('gcalendar-wrapintervals-draggable');
 
     daysArr = this._calendar._days.array;
     for (i in daysArr) {
@@ -231,4 +243,29 @@ gCalendar.Action.prototype._stopDroppable = function() {
             }
         }
     }
+};
+
+gCalendar.Action.prototype._intervalOnDrop = function(interval) {
+    var i;
+
+    this._wrapIntervals.remove();
+    this._stopDroppable();
+
+    for (i in this._intervals) {
+        delete this._intervals[i].actionId;
+    }
+
+    this._dateStart.setFullYear(interval.day.date.getFullYear());
+    this._dateStart.setMonth(interval.day.date.getMonth());
+    this._dateStart.setDate(interval.day.date.getDate());
+
+    this._timeStart
+        .setHours(interval.time.getHours())
+        .setMinutes(interval.time.getMinutes());
+
+    this._calDay = interval.day;
+    this._calFirstInterval = interval;
+    this._calendarIntervalsBusy();
+
+    console.log('drop in ' + interval.time.getString());
 };

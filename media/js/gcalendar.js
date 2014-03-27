@@ -134,10 +134,10 @@ gCalendar.prototype._UIInitOneDay = function() {
     this._days.array[day.id] = day;
     this._days.htmlTr.append(day.html);
 
-    // TODO: Убрать!
+/*    // TODO: Убрать!
     day.html.click(function(ev) {
         console.log(day);
-    });
+    });*/
 };
 
 gCalendar.prototype._UIInitOneInterval = function(day, i) {
@@ -156,7 +156,10 @@ gCalendar.prototype._UIInitOneInterval = function(day, i) {
     day.html.append(interval.html);
 
     // TODO: Убрать!
-    interval.html.html(interval.time.getString());
+    interval.html.html(interval.time.getString() + ' - ' + interval.id);
+    interval.html.click(function(ev) {
+        console.log(interval);
+    });
 };
 
 /*gCalendar.prototype.setData = function(data) {
