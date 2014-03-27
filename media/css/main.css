@@ -36,3 +36,6 @@ a:hover {text-decoration: none;}
 .gcalendar-day {border-right: 1px solid #000;}
 
 .gcalendar-dragitem {width: 70px; height: 25px; background: red;}
+
+.gcalendar-wrapintervals {margin-top: -2px; border: 1px solid red; background: #66c05d; cursor: pointer;}
+.gcalendar-wrapintervals .gcalendar-interval {width: 68px;}

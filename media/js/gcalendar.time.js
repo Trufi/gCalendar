@@ -15,9 +15,15 @@ gCalendar.Time = function(param, param2) {
             if (time.length === 2 || time.length === 3) {
                 this._hour = Math.max(Math.min(parseInt(time[0], 10), 23), 0);
                 this._minute = Math.max(Math.min(parseInt(time[1], 10), 59), 0);
+            } else if (time.length === 1) {
+                time = parseInt(time[0], 10);
+                if (time !== NaN) {
+                    this.setFullMinutes(time);
+                } else {
+                    this._reset();
+                }
             } else {
-                this._hour = 0;
-                this._minute = 0;
+                this._reset();
             }
         } else if (param instanceof Date || param instanceof gCalendar.Time) {
             this._hour = param.getHours();
@@ -25,18 +31,23 @@ gCalendar.Time = function(param, param2) {
         } else if (typeof param === 'number') {
             this.setFullMinutes(param);
         } else {
-            this._hour = 0;
-            this._minute = 0;
+            this._reset();
         }
     } else {
         if (typeof param === 'number' && typeof param2 === 'number') {
             this._hour = Math.max(Math.min(parseInt(param, 10), 23), 0);
             this._minute = Math.max(Math.min(parseInt(param2, 10), 59), 0);
         } else {
-            this._hour = 0;
-            this._minute = 0;
+            this._reset();
         }
     }
+};
+
+gCalendar.Time.prototype._reset = function() {
+    this._hour = 0;
+    this._minute = 0;
+
+    return this;
 };
 
 gCalendar.Time.prototype.getHours = function() {
@@ -99,7 +110,7 @@ gCalendar.Time.prototype.getDifferenceWith = function(antime) {
         a = this.getFullMinutes();
         b = antime.getFullMinutes();
 
-        return new gCalendar.Time(Math.abs(b - a));
+        return Math.abs(b - a);
     } else {
         return false;
     }

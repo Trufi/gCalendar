@@ -1,4 +1,4 @@
-var cal;
+var cal, action1, action2, action3;
 
 $(function() {
     var dataArray = [
@@ -18,6 +18,25 @@ $(function() {
         timeBounds: {
             start: new gCalendar.Time(08, 00),
             end: new gCalendar.Time(16, 00)
-        }
+        },
+        firstDay: new Date(2014, 02, 25)
     });
+
+    action1 = cal.addAction({
+        dateStart: new Date(2014, 02, 26, 9, 5),
+        duration: 55
+    });
+
+    action2 = cal.addAction({
+        dateStart: new Date(2014, 02, 26, 10, 32),
+        duration: 115
+    });
+
+
+    action3 = cal.addAction({
+        dateStart: new Date(2014, 02, 25, 10, 00),
+        duration: 15
+    });
+
+
 });
