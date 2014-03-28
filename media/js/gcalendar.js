@@ -28,6 +28,27 @@ function gCalendar(param) {
     // дни в календаре
     this._days = {};
 
+    this._countIdQueueItem = (function() {
+        var count = 0;
+        return function() {
+                return count++;
+            };
+    })();
+
+    this._countIdDay = (function() {
+        var count = 0;
+        return function() {
+                return count++;
+            };
+    })();
+
+    this._countIdInterval = (function() {
+        var count = 0;
+        return function() {
+                return count++;
+            };
+    })();
+
     if (typeof param === 'object') {
         if (param.parent) {
             this._html.parent = $(param.parent);
@@ -93,22 +114,8 @@ function gCalendar(param) {
     this._draw();
 };
 
-gCalendar.prototype._countIdDay = (function() {
-    var count = 0;
-    return function() {
-            return count++;
-        };
-})();
-
-gCalendar.prototype._countIdInterval = (function() {
-    var count = 0;
-    return function() {
-            return count++;
-        };
-})();
-
 gCalendar.prototype._UIInit = function() {
-    this._html.main = $('<div />', {'class': 'gCalendar gCalendar-clearfix'});
+    this._html.main = $('<div />', {'class': 'gcalendar gcalendar-clearfix'});
 
     // инициализируем дни и интервалы со слайдером
     this._UIInitDays();
@@ -386,13 +393,6 @@ gCalendar.prototype._draw = function() {
 };
 
 // очередь не проинициализрованных элеметов, т.е. не в _visibleDays
-gCalendar.prototype._countIdQueueItem = (function() {
-    var count = 0;
-    return function() {
-            return count++;
-        };
-})();
-
 gCalendar.prototype._addToQueue = function(dayId, item) {
     var id = this._countIdQueueItem();
 

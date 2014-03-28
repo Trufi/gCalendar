@@ -1,5 +1,7 @@
 var cal, action1, action2, action3, action4;
 
+var cal2, a1, a2;
+
 $(function() {
     var dataArray = [
         {
@@ -50,4 +52,26 @@ $(function() {
     });
 
 
+    cal2 = new gCalendar({
+        timeInterval: 30,
+        parent: $('#calendar-wrap2'),
+        data: dataArray,
+        timeBounds: {
+            start: new gCalendar.Time(12, 00),
+            end: new gCalendar.Time(20, 00)
+        },
+        firstDay: new Date(2014, 02, 25),
+        daysLength: 10,
+        maxScroll: 5
+    });
+
+    a1 = cal2.addAction({
+        dateStart: new Date(2014, 02, 30, 14, 00),
+        duration: 50
+    });
+
+    a2 = cal2.addAction({
+        dateStart: new Date(2014, 02, 26, 12, 00),
+        duration: 350
+    });
 });
