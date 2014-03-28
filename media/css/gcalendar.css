@@ -35,3 +35,4 @@
 .gcalendar-column-right .gcalendar-button-right {display: inline-block; vertical-align: middle;}
 
 .gcalendar th {border-top: 1px solid #000;}
+.gcalendar-notdraggable {cursor: default;}

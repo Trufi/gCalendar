@@ -17,7 +17,8 @@ $(function() {
 
     action1 = cal.addAction({
         dateStart: new Date(2014, 02, 26, 9, 5),
-        duration: 55
+        duration: 55,
+        draggable: false
     });
 
     action2 = cal.addAction({

@@ -59,9 +59,18 @@ gCalendar.Action = function(param) {
 
         this._addClass = param.addClass || '';
         this._html = param.html || '';
+
+        // можно ли перемещать мероприятие
+        if (typeof param.draggable !== 'undefined') {
+            this._isDraggable = param.draggable;
+        } else {
+            this._isDraggable = true;
+        }
     } else {
         this._dateStart = new Date();
         this._duration = param.duration || 0;
+        this._addClass = param.addClass || '';
+        this._html = param.html || '';
     }
 
     this._duration = Math.abs(this._duration);
@@ -155,7 +164,12 @@ gCalendar.Action.prototype._calendarIntervalsHtmlBusy = function() {
             width: this._calendar._html.intervalSize.width - 5,
             height: this._calendar._html.intervalSize.height * this._numberIntervals - 5
         })
-        .draggable({
+        .on('click', function() {
+                _this.onClick();
+            });
+
+    if (this._isDraggable) {
+        this._wrapIntervals.draggable({
             // helper: 'clone',
             opacity: 0.3,
             revert: true,
@@ -165,9 +179,9 @@ gCalendar.Action.prototype._calendarIntervalsHtmlBusy = function() {
             stop: this._stopDroppable.bind(this),
             zIndex: 15
         })
-        .on('click', function() {
-                _this.onClick();
-            });
+    } else {
+        this._wrapIntervals.addClass('gcalendar-notdraggable');
+    }
 };
 
 gCalendar.Action.prototype._calendarIntervalsHtmlFree = function() {
