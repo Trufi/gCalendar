@@ -114,7 +114,7 @@ gCalendar.Action.prototype._calendarIntervalsHtmlBusy = function() {
     for (i = 0; i < this._numberIntervals; i++) {
         el = this._calDay.intervals[i + this._calFirstInterval.id];
 
-        this._wrapIntervals.append('<div class="gcalendar-interval"></div>')
+        // this._wrapIntervals.append('<div class="gcalendar-interval"></div>')
 
         el.actionId = this.id;
         this._intervals[i + this._calFirstInterval.id] = el;
@@ -123,6 +123,10 @@ gCalendar.Action.prototype._calendarIntervalsHtmlBusy = function() {
     this._calFirstInterval.html.append(this._wrapIntervals);
 
     this._wrapIntervals
+        .css({
+            width: this._calendar._html.intervalSize.width - 4,
+            height: this._calendar._html.intervalSize.height * this._numberIntervals - 5
+        })
         .draggable({
             // helper: 'clone',
             opacity: 0.3,
@@ -267,5 +271,5 @@ gCalendar.Action.prototype._intervalOnDrop = function(interval) {
     this._calFirstInterval = interval;
     this._calendarIntervalsBusy();
 
-    console.log('drop in ' + interval.time.getString());
+    // console.log('drop in ' + interval.time.getString());
 };

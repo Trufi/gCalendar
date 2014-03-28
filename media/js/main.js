@@ -19,7 +19,9 @@ $(function() {
             start: new gCalendar.Time(08, 00),
             end: new gCalendar.Time(16, 00)
         },
-        firstDay: new Date(2014, 02, 25)
+        firstDay: new Date(2014, 02, 25),
+        daysLength: 5,
+        maxScroll: 45
     });
 
     action1 = cal.addAction({
