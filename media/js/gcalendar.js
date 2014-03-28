@@ -198,7 +198,7 @@ gCalendar.prototype._UIInitOneDay = function() {
 
 gCalendar.prototype._UIInitDescDay = function(day, i) {
     var dateDay = ('0' + day.date.getDate()).slice(-2),
-        dateMonth = ('0' + day.date.getMonth()).slice(-2);
+        dateMonth = ('0' + (day.date.getMonth() + 1)).slice(-2);
 
     day.htmlDesc = '<th><div class="gcalendar-interval">' + dateDay + '.' + dateMonth + '</div></th>';
 };

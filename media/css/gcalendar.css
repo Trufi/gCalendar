@@ -1,4 +1,4 @@
-.gcalendar {}
+.gcalendar {display: inline-block;}
 
 .gcalendar-clearfix {zoom: 1;}
 .gcalendar-clearfix:after {content: '.'; display: block; height: 0; clear: both; visibility: hidden;}
@@ -25,7 +25,7 @@
 .gcalendar-button-right {width: 13px; height: 20px; background: transparent url('../img/right.png') 0 0 no-repeat; cursor: pointer;}
 .gcalendar-button-disable {opacity: 0.3; cursor: default;}
 
-.gcalendar-column-left .gcalendar-interval {border-right: none; line-height: 25px;}
+.gcalendar-column-left .gcalendar-interval {border-right: none; border-left: 1px solid #000; line-height: 25px;}
 .gcalendar-column-left .gcalendar-button-left {display: inline-block; vertical-align: middle;}
 
 .gcalendar-desc-left .gcalendar-interval {border-bottom-color: transparent; line-height: 13px;}
