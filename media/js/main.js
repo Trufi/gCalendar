@@ -1,4 +1,4 @@
-var cal, action1, action2, action3;
+var cal, action1, action2, action3, action4;
 
 $(function() {
     var dataArray = [
@@ -31,13 +31,22 @@ $(function() {
 
     action2 = cal.addAction({
         dateStart: new Date(2014, 02, 26, 10, 32),
-        duration: 115
+        duration: 115,
+        addClass: 'busy',
+        html: '<div>Busy</div>'
     });
-
 
     action3 = cal.addAction({
         dateStart: new Date(2014, 02, 25, 10, 00),
-        duration: 15
+        duration: 15,
+        onClick: function() {
+            alert('click!');
+        }
+    });
+
+    action4 = cal.addAction({
+        dateStart: new Date(2014, 02, 30, 14, 00),
+        duration: 25
     });
 
 

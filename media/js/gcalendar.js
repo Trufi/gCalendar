@@ -23,6 +23,8 @@ function gCalendar(param) {
         duration: 200
     };
 
+    this._queue = {};
+
     // дни в календаре
     this._days = {};
 
@@ -177,7 +179,7 @@ gCalendar.prototype._UIInitOneDay = function() {
     this._days.htmlTbody.append(day.html);
     this._days.htmlThead.append(day.htmlDesc);
 
-/*    // TODO: Убрать!8
+    /*
     day.html.click(function(ev) {
         console.log(day);
     });*/
@@ -215,7 +217,7 @@ gCalendar.prototype._UIInitOneInterval = function(day, i) {
     day.intervals[interval.id] = interval;
     day.html.append(interval.html);
 
-    /*// TODO: Убрать!
+    /*
     interval.html.html(interval.time.getString() + ' - ' + interval.id);
     interval.html.click(function(ev) {
         console.log(interval);
@@ -326,6 +328,8 @@ gCalendar.prototype._UIScroll = function(newInd) {
         this._scroll.index = newInd;
 
         this._UIUpdateButtonStatus();
+
+        this._updateVisibleDays();
     }
 };
 
@@ -357,18 +361,53 @@ gCalendar.prototype._UIUpdateButtonStatus = function() {
     }
 };
 
+gCalendar.prototype._updateVisibleDays = function() {
+    var day, i;
+
+    this._visibleDays = {
+        firstDayNumber: this._scroll.index,
+        array: {}
+    };
+
+    for (i = 0; i < this._daysLength; i++) {
+        day = this._days.array[this._scroll.index + i];
+        this._visibleDays.array[day.id] = day;
+    }
+
+    this._checkQueue();
+};
 
 gCalendar.prototype._draw = function() {
     this._html.parent.empty();
     this._html.parent.append(this._html.main);
 
     this._UIUpdateButtonStatus();
+    this._updateVisibleDays();
 };
 
-gCalendar.prototype.addAction = function(param) {
-    var action = new gCalendar.Action(param);
+// очередь не проинициализрованных элеметов, т.е. не в _visibleDays
+gCalendar.prototype._countIdQueueItem = (function() {
+    var count = 0;
+    return function() {
+            return count++;
+        };
+})();
 
-    action.addTo(this);
+gCalendar.prototype._addToQueue = function(dayId, item) {
+    var id = this._countIdQueueItem();
 
-    return action;
+    this._queue[id] = {id: id, dayId: dayId, item: item};
 };
+
+gCalendar.prototype._checkQueue = function() {
+    var i;
+
+    for (i in this._queue) {
+        if (typeof this._visibleDays.array[this._queue[i].dayId] !== 'undefined') {
+            this._queue[i].item._initCalendar();
+
+            delete this._queue[i];
+        }
+    }
+};
+

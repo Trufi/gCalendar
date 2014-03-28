@@ -29,6 +29,8 @@ a:hover {text-decoration: none;}
 .clearfix {zoom: 1;}
 .clearfix:after {content: '.'; display: block; height: 0; clear: both; visibility: hidden;}
 
+
+
 /* gCalendar
 ------------------------------------------------ */
 .gcalendar {}
@@ -66,3 +68,7 @@ a:hover {text-decoration: none;}
 
 .gcalendar-column-right .gcalendar-interval {height: 20px; border-bottom: none; text-align: center;}
 .gcalendar-column-right .gcalendar-button-right {display: inline-block; vertical-align: middle;}
+
+
+
+.busy {background: #f66c6a;}
