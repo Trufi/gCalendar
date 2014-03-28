@@ -117,21 +117,23 @@ function gCalendar(param) {
 gCalendar.prototype._UIInit = function() {
     this._html.main = $('<div />', {'class': 'gcalendar gcalendar-clearfix'});
 
-    // инициализируем дни и интервалы со слайдером
-    this._UIInitDays();
-    // получаем _html.moveArea
+    this._html.parent.empty();
+    this._html.parent.append(this._html.main);
 
     // инициализируем левые подписи
     this._UIInitLeftColumn();
     // получаем _html.leftColumn.table
+    this._html.main.append(this._html.leftColumn.table);
+
+    // инициализируем дни и интервалы со слайдером
+    this._UIInitDays();
+    // получаем _html.moveArea
 
     // инициализируем правую колонку
     this._UIInitRightColumn();
 
 
     // append html
-    this._html.main.append(this._html.leftColumn.table);
-    this._html.main.append(this._html.moveArea);
     this._html.main.append(this._html.rightColumn.table);
 };
 
@@ -141,6 +143,7 @@ gCalendar.prototype._UIInitDays = function() {
     this._html.moveArea = $('<div />', {'class': 'gcalendar-movearea'});
     this._html.moveAreaInner = $('<div />', {'class': 'gcalendar-movearea-inner'});
     this._html.moveArea.append(this._html.moveAreaInner);
+    this._html.main.append(this._html.moveArea);
 
     this._days.html = $('<table><thead><tr class="gcalendar-desc-top"></tr></thead><tbody><tr></tr></tbody></table>', {'class': 'gcalendar-tabledays'});
     this._days.htmlThead = this._days.html.find('thead tr');
@@ -161,7 +164,7 @@ gCalendar.prototype._UIInitDays = function() {
     };
 
     this._html.moveArea.css({
-        width: (this._html.intervalSize.width + 1) * this._daysLength - 1
+        width: this._html.intervalSize.width * this._daysLength - 1
     });
 };
 
@@ -196,7 +199,7 @@ gCalendar.prototype._UIInitDescDay = function(day, i) {
     var dateDay = ('0' + day.date.getDate()).slice(-2),
         dateMonth = ('0' + day.date.getMonth()).slice(-2);
 
-    day.htmlDesc = '<th><div class="gcalendar-day">' + dateDay + '.' + dateMonth + '</div></th>';
+    day.htmlDesc = '<th><div class="gcalendar-interval">' + dateDay + '.' + dateMonth + '</div></th>';
 };
 
 gCalendar.prototype._UIInitOneInterval = function(day, i) {
@@ -239,7 +242,7 @@ gCalendar.prototype._UIInitLeftColumn = function() {
             '<thead>' +
                 '<tr class="gcalendar-desc-top">' +
                     '<th>' +
-                        '<div class="gcalendar-day">&nbsp;</div>' +
+                        '<div class="gcalendar-interval">&nbsp;</div>' +
                     '</th>' +
                 '</tr>' +
             '</thead>' +
@@ -273,14 +276,14 @@ gCalendar.prototype._UIInitRightColumn = function() {
 
 gCalendar.prototype._UIInitDescInterval = function() {
     var html = '',
-        day = this._days.array[0],
-        cl, i;
+        cl, i, time;
 
     for (i = 0; i < this._intervalLength; i++) {
         cl = (i === this._intervalLength - 1) ? ' gcalendar-interval-last' : '';
+        time = new gCalendar.Time(this._timeBounds.start.getFullMinutes() + i * this._timeInterval);
 
         if (i % 2 === 0) {
-            html += '<div class="gcalendar-interval' + cl + '">' + day.intervals[i + day.firstIntervalNumber].time.getString() + '</div>';
+            html += '<div class="gcalendar-interval' + cl + '">' + time.getString() + '</div>';
         } else {
             html += '<div class="gcalendar-interval gcalendar-interval-spec' + cl + '"></div>';
         }
@@ -330,7 +333,7 @@ gCalendar.prototype._UIScroll = function(newInd) {
             this._scroll.activeDays++;
         }
 
-        this._html.moveAreaInner.animate({left: -newInd * (this._html.intervalSize.width + 1) + 'px'}, this._scroll.duration);
+        this._html.moveAreaInner.animate({left: -newInd * this._html.intervalSize.width + 'px'}, this._scroll.duration);
 
         this._scroll.index = newInd;
 
@@ -385,8 +388,6 @@ gCalendar.prototype._updateVisibleDays = function() {
 };
 
 gCalendar.prototype._draw = function() {
-    this._html.parent.empty();
-    this._html.parent.append(this._html.main);
 
     this._UIUpdateButtonStatus();
     this._updateVisibleDays();

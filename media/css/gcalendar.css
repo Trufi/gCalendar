@@ -9,28 +9,29 @@
 .gcalendar-movearea {float: left; border-left: 1px solid #008ed0; border-right: 1px solid #008ed0; width: 212px; overflow: hidden;}
 .gcalendar-movearea-inner {position: relative; left: 0;}
 
-.gcalendar-interval {position: relative; border-bottom: 1px dashed #000; width: 90px; height: 15px;}
+.gcalendar-movearea-inner table td:first-child {width: 91px;}
+
+.gcalendar-interval {position: relative; border-right: 1px solid #000; border-bottom: 1px dashed #000; width: 90px; height: 15px;}
 .gcalendar-interval-last {border-bottom: none;}
 .gcalendar-interval-spec {border-bottom: 1px solid #000;}
-.gcalendar-day {border-right: 1px solid #000;}
+.gcalendar-day {}
 
 .gcalendar-wrapintervals {position: absolute; top: 1px; left: 1px; border: 1px solid #000; background: #66c05d; cursor: pointer; z-index: 5;}
 .gcalendar-wrapintervals-draggable {border-color: red;}
 
-.gcalendar-wraptables {}
-.gcalendar-desc-top .gcalendar-day {border-bottom: 1px solid #000;}
+.gcalendar-desc-top .gcalendar-interval {border-bottom: 1px solid #000; height: 25px; line-height: 25px;}
 
 .gcalendar-button-left {width: 13px; height: 20px; background: transparent url('../img/left.png') 0 0 no-repeat; cursor: pointer;}
 .gcalendar-button-right {width: 13px; height: 20px; background: transparent url('../img/right.png') 0 0 no-repeat; cursor: pointer;}
 .gcalendar-button-disable {opacity: 0.3; cursor: default;}
 
-.gcalendar-column-left .gcalendar-day {border-right: none;}
+.gcalendar-column-left .gcalendar-interval {border-right: none; line-height: 25px;}
 .gcalendar-column-left .gcalendar-button-left {display: inline-block; vertical-align: middle;}
 
 .gcalendar-desc-left .gcalendar-interval {border-bottom-color: transparent; line-height: 13px;}
 .gcalendar-desc-left .gcalendar-interval-spec {border-bottom: 1px solid #000;}
 
-.gcalendar-column-right .gcalendar-interval {height: 20px; border-bottom: none; text-align: center;}
+.gcalendar-column-right .gcalendar-interval {border: none; height: 25px; line-height: 25px; text-align: center;}
 .gcalendar-column-right .gcalendar-button-right {display: inline-block; vertical-align: middle;}
 
 .gcalendar th {border-top: 1px solid #000;}

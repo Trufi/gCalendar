@@ -147,7 +147,7 @@ gCalendar.Action.prototype._calendarIntervalsHtmlBusy = function() {
         .addClass(this._addClass)
         .html(this._html)
         .css({
-            width: this._calendar._html.intervalSize.width - 4,
+            width: this._calendar._html.intervalSize.width - 5,
             height: this._calendar._html.intervalSize.height * this._numberIntervals - 5
         })
         .draggable({
