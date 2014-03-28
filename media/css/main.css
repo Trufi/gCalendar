@@ -30,6 +30,4 @@ a:hover {text-decoration: none;}
 .clearfix:after {content: '.'; display: block; height: 0; clear: both; visibility: hidden;}
 
 .calendar-wrap {margin-bottom: 20px;}
-.busy {background: #cde9f3;}
-.admin {background: #dddddd;}
-.gcalendar-wrapintervals {font-size: 10px; line-height: 14px;}
+.busy {background: #f66c6a;}
