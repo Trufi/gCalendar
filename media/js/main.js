@@ -24,7 +24,10 @@ $(function() {
         dateStart: new Date(2014, 02, 26, 10, 32),
         duration: 115,
         addClass: 'busy',
-        html: '<div>Busy</div>'
+        html: '<div>Busy</div>',
+        onChange: function() {
+            alert('change!');
+        }
     });
 
     action3 = cal.addAction({
@@ -49,7 +52,6 @@ $(function() {
     cal2 = new gCalendar({
         timeInterval: 30,
         parent: $('#calendar-wrap2'),
-        data: dataArray,
         timeBounds: {
             start: new gCalendar.Time(12, 00),
             end: new gCalendar.Time(20, 00)

@@ -51,6 +51,12 @@ gCalendar.Action = function(param) {
             this.onClick = function() {};
         }
 
+        if (typeof param.onChange === 'function') {
+            this.onChange = param.onChange;
+        } else {
+            this.onChange = function() {};
+        }
+
         this._addClass = param.addClass || '';
         this._html = param.html || '';
     } else {
@@ -295,4 +301,6 @@ gCalendar.Action.prototype._intervalOnDrop = function(interval) {
     this._calDay = interval.day;
     this._calFirstInterval = interval;
     this._calendarIntervalsBusy();
+
+    this.onChange();
 };

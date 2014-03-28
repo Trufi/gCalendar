@@ -389,7 +389,6 @@ gCalendar.prototype._updateVisibleDays = function() {
 };
 
 gCalendar.prototype._draw = function() {
-
     this._UIUpdateButtonStatus();
     this._updateVisibleDays();
 };
