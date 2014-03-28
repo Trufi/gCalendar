@@ -2,6 +2,7 @@
 // jQuery
 // jQuery UI Draggable, Droppable
 // gCalendar.Time.js
+// gCalendar.css
 
 function gCalendar(param) {
     var _this = this,
