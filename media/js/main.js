@@ -1,4 +1,4 @@
-var cal, action1, action2, action3, action4;
+var cal, action1, action2, action3, action4, action5;
 
 var cal2, a1, a2;
 
@@ -49,6 +49,11 @@ $(function() {
     action4 = cal.addAction({
         dateStart: new Date(2014, 02, 30, 14, 00),
         duration: 25
+    });
+
+    action5 = cal.addAction({
+        dateStart: new Date(2014, 02, 29, 15, 30),
+        duration: 30
     });
 
 

@@ -16,7 +16,7 @@
 .gcalendar-interval-spec {border-bottom: 1px solid #000;}
 .gcalendar-day {}
 
-.gcalendar-wrapintervals {position: absolute; top: 1px; left: 1px; border: 1px solid #000; background: #66c05d; cursor: pointer; z-index: 5;}
+.gcalendar-wrapintervals {position: absolute; top: 1px; left: 1px; border: 1px solid #000; background: #00aef1; cursor: pointer; z-index: 5;}
 .gcalendar-wrapintervals-draggable {border-color: red;}
 
 .gcalendar-desc-top .gcalendar-interval {border-bottom: 1px solid #000; height: 25px; line-height: 25px;}

@@ -89,11 +89,10 @@ gCalendar.Action.prototype._initCalendar = function() {
         this._calDay = days.array[days.firstDayNumber + diff];
 
         // найдём начальный интервал
-        // приватное поле _timeInterval ?
         diff = Math.floor((this._timeStart.getFullMinutes() - this._calDay.intervals[this._calDay.firstIntervalNumber].time.getFullMinutes()) / this._calendar._timeInterval);
 
         // проверка на первый и на последний интервал в дне
-        if ((diff >= this._calendar._scroll.min) && (typeof this._calDay.intervals[this._calDay.firstIntervalNumber + diff + this._numberIntervals] !== 'undefined')) {
+        if ((diff >= this._calendar._scroll.min) && (typeof this._calDay.intervals[this._calDay.firstIntervalNumber + diff + this._numberIntervals - 1] !== 'undefined')) {
             this._calFirstInterval = this._calDay.intervals[this._calDay.firstIntervalNumber + diff];
             this._calendarIntervalsBusy();
         } else {
