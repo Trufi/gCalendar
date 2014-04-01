@@ -12,7 +12,8 @@ $(function() {
         },
         firstDay: new Date(2014, 02, 25),
         daysLength: 5,
-        maxScroll: 45
+        maxScroll: 45,
+        freeArea: $('#area-wrap')
     });
 
     action1 = cal.addAction({
@@ -47,6 +48,15 @@ $(function() {
     action5 = cal.addAction({
         dateStart: new Date(2014, 02, 29, 15, 30),
         duration: 30
+    });
+
+    cal.addAction({
+        duration: 150
+    });
+
+    cal.addAction({
+        duration: 100,
+        addClass: 'busy'
     });
 
 

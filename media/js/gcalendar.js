@@ -29,6 +29,8 @@ function gCalendar(param) {
     // дни в календаре
     this._days = {};
 
+    this._freeArea = {};
+
     this._countIdQueueItem = (function() {
         var count = 0;
         return function() {
@@ -53,6 +55,10 @@ function gCalendar(param) {
     if (typeof param === 'object') {
         if (param.parent) {
             this._html.parent = $(param.parent);
+        }
+
+        if (param.freeArea) {
+            this._freeArea.parent = $(param.freeArea);
         }
 
         // временной интервал, по которому делится день на элементы
@@ -136,6 +142,41 @@ gCalendar.prototype._UIInit = function() {
 
     // append html
     this._html.main.append(this._html.rightColumn.table);
+
+    // freeArea для перемещение дней за границы недели
+    this._UIInitFreeArea();
+};
+
+gCalendar.prototype._UIInitFreeArea = function() {
+    var i;
+
+    this._freeArea.html = $('<div />', {'class': 'gcalendar-day gcalendar-freearea'});
+    this._freeArea.intervals = {};
+
+    for (i = 0; i < this._intervalLength; i++) {
+        (function() {
+            var el = {};
+
+            el.html = $('<div />', {'class': 'gcalendar-interval'});
+
+            if (i === this._intervalLength - 1) {
+                el.html.addClass('gcalendar-interval-last');
+            }
+
+            el.id = this._countIdInterval();
+            el.day = this._freeArea;
+            el.isInFreeArea = true;
+
+            this._freeArea.intervals[el.id] = el;
+            this._freeArea.html.append(el.html);
+        }).apply(this);
+    }
+
+    this._freeArea.firstIntervalNumber = Number(Object.keys(this._freeArea.intervals)[0]);
+
+    if (typeof this._freeArea.parent !== 'undefined') {
+        this._freeArea.parent.append(this._freeArea.html);
+    }
 };
 
 gCalendar.prototype._UIInitDays = function() {
@@ -201,7 +242,7 @@ gCalendar.prototype._UIInitDescDay = function(day, i) {
         dateMonth = ('0' + (day.date.getMonth() + 1)).slice(-2),
         dayStrArray = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
 
-    day.htmlDesc = '<th><div class="gcalendar-interval">' + dateDay + '.' + dateMonth + ' ' + dayStrArray[day.date.getDay()] + '</div></th>';
+    day.htmlDesc = '<th><div class="gcalendar-interval">' + dateDay + '.' + dateMonth + ', ' + dayStrArray[day.date.getDay()] + '</div></th>';
 };
 
 gCalendar.prototype._UIInitOneInterval = function(day, i) {
@@ -335,7 +376,9 @@ gCalendar.prototype._UIScroll = function(newInd) {
             this._scroll.activeDays++;
         }
 
-        this._html.moveAreaInner.animate({left: -newInd * this._html.intervalSize.width + 'px'}, this._scroll.duration);
+        this._html.moveAreaInner
+            .stop(true, true)
+            .animate({left: -newInd * this._html.intervalSize.width + 'px'}, this._scroll.duration);
 
         this._scroll.index = newInd;
 

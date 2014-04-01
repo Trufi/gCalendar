@@ -36,3 +36,6 @@
 
 .gcalendar th {border-top: 1px solid #000;}
 .gcalendar-notdraggable {cursor: default;}
+
+.gcalendar-freearea {border-top: 1px solid #000; border-bottom: 1px solid #000;}
+.gcalendar-freearea .gcalendar-interval {border-left: 1px solid #000;}

@@ -29,5 +29,6 @@ a:hover {text-decoration: none;}
 .clearfix {zoom: 1;}
 .clearfix:after {content: '.'; display: block; height: 0; clear: both; visibility: hidden;}
 
-.calendar-wrap {margin-bottom: 20px;}
+.calendar-wrap {float: left; margin-bottom: 20px;}
+.area-wrap {float: left; margin-left: 30px; padding-top: 26px;}
 .busy {background: #f66c6a;}

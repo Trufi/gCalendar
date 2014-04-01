@@ -17,6 +17,8 @@ gCalendar._countIdAction = (function() {
         };
 })();
 
+gCalendar._isChrome = navigator.userAgent.indexOf('Chrome') !== -1;
+
 // сравнивает две даты
 gCalendar.equalDates = function(a, b) {
     return (a.getFullYear() === b.getFullYear()) && (a.getMonth() === b.getMonth()) && (a.getDate() === b.getDate());
@@ -43,6 +45,7 @@ gCalendar.Action = function(param) {
             this._dateStart = new Date(param.dateStart);
         } else {
             this._dateStart = new Date();
+            this._noDateStart = true;
         }
 
         if (typeof param.onClick === 'function') {
@@ -66,13 +69,17 @@ gCalendar.Action = function(param) {
         } else {
             this._isDraggable = true;
         }
+
+        this._data = param.data || {};
     } else {
         this._dateStart = new Date();
-        this._duration = param.duration || 0;
-        this._addClass = param.addClass || '';
-        this._html = param.html || '';
+        this._duration = 0;
+        this._addClass = '';
+        this._html = '';
+        this._data = {};
     }
 
+    this._html = $(this._html);
     this._duration = Math.abs(this._duration);
     this._timeStart = new gCalendar.Time(this._dateStart);
     this._dateStart = new Date(this._dateStart.getFullYear(), this._dateStart.getMonth(), this._dateStart.getDate());
@@ -90,39 +97,44 @@ gCalendar.Action.prototype.addTo = function(calendar) {
 // вычисляет, в каком дне и сколько интервалов занимает мероприятие
 gCalendar.Action.prototype._initCalendar = function() {
     var days = this._calendar._visibleDays,
-        diff, date;
+        diff, date, i;
 
     // сколько интервалов займет мероприятие
     this._numberIntervals = Math.ceil(this._duration / this._calendar._timeInterval);
 
-    // отсчёт дней в любом календаре начинается с 0
-    diff = gCalendar.diffDates(days.array[days.firstDayNumber].date, this._dateStart);
+    // если у мероприятия была указана дата и вермя старта
+    if (!this._noDateStart) {
+        // отсчёт дней в любом календаре начинается с 0
+        diff = gCalendar.diffDates(days.array[days.firstDayNumber].date, this._dateStart);
 
-    // проверка на первый и на последний день
-    if ((diff >= this._calendar._scroll.min) && (typeof days.array[days.firstDayNumber + diff] !== 'undefined')) {
-        // наш день - это
-        this._calDay = days.array[days.firstDayNumber + diff];
+        // проверка на первый и на последний день
+        if ((diff >= this._calendar._scroll.min) && (typeof days.array[days.firstDayNumber + diff] !== 'undefined')) {
+            // наш день - это
+            this._calDay = days.array[days.firstDayNumber + diff];
 
-        // найдём начальный интервал
-        diff = Math.floor((this._timeStart.getFullMinutes() - this._calDay.intervals[this._calDay.firstIntervalNumber].time.getFullMinutes()) / this._calendar._timeInterval);
+            // найдём начальный интервал
+            diff = Math.floor((this._timeStart.getFullMinutes() - this._calDay.intervals[this._calDay.firstIntervalNumber].time.getFullMinutes()) / this._calendar._timeInterval);
 
-        // проверка на первый и на последний интервал в дне
-        if ((diff >= this._calendar._scroll.min) && (typeof this._calDay.intervals[this._calDay.firstIntervalNumber + diff + this._numberIntervals - 1] !== 'undefined')) {
-            this._calFirstInterval = this._calDay.intervals[this._calDay.firstIntervalNumber + diff];
-            this._calendarIntervalsBusy();
+            // проверка на первый и на последний интервал в дне
+            if ((diff >= this._calendar._scroll.min) && (typeof this._calDay.intervals[this._calDay.firstIntervalNumber + diff + this._numberIntervals - 1] !== 'undefined')) {
+                this._calFirstInterval = this._calDay.intervals[this._calDay.firstIntervalNumber + diff];
+                this._calendarIntervalsBusy(); // <------
+            } else {
+                console.log('время мероприятия не попадает в заданные границы дня');
+            }
+        } else if ((diff >= this._calendar._scroll.min) && (days.firstDayNumber + diff < this._calendar._scroll.max)) {
+            this._calendar._addToQueue(days.firstDayNumber + diff, this);
         } else {
-            console.log('время мероприятия не попадает в заданные границы дня');
+            console.log('дата мероприятия не попадает в заданные дни');
         }
-    } else if ((diff >= this._calendar._scroll.min) && (days.firstDayNumber + diff < this._calendar._scroll.max)) {
-        this._calendar._addToQueue(days.firstDayNumber + diff, this);
     } else {
-        console.log('дата мероприятия не попадает в заданные дни');
+        // поместим меропрятие сразу в freeArea
+        this._initFreeArea();
     }
 };
 
 gCalendar.Action.prototype._calendarIntervalsBusy = function() {
-    var busyIntervals = {},
-        isBusy = false,
+    var isBusy = false,
         i;
 
     for (i = 0; i < this._numberIntervals; i++) {
@@ -149,8 +161,6 @@ gCalendar.Action.prototype._calendarIntervalsHtmlBusy = function() {
     for (i = 0; i < this._numberIntervals; i++) {
         el = this._calDay.intervals[i + this._calFirstInterval.id];
 
-        // this._wrapIntervals.append('<div class="gcalendar-interval"></div>')
-
         el.actionId = this.id;
         this._intervals[i + this._calFirstInterval.id] = el;
     }
@@ -159,7 +169,7 @@ gCalendar.Action.prototype._calendarIntervalsHtmlBusy = function() {
 
     this._wrapIntervals
         .addClass(this._addClass)
-        .html(this._html)
+        .append(this._html)
         .css({
             width: this._calendar._html.intervalSize.width - 5,
             height: this._calendar._html.intervalSize.height * this._numberIntervals - 5
@@ -170,14 +180,22 @@ gCalendar.Action.prototype._calendarIntervalsHtmlBusy = function() {
 
     if (this._isDraggable) {
         this._wrapIntervals.draggable({
-            // helper: 'clone',
             opacity: 0.3,
-            revert: true,
-            // grid: [71, 26],
+            revert: false,
             cursorAt: {top: 5, left: 35},
             start: this._initDroppable.bind(this),
             stop: this._stopDroppable.bind(this),
-            zIndex: 15
+            zIndex: 15,
+            scroll: true,
+            helper: 'clone',
+            appendTo: this._calendar._html.main,
+            drag: function(ev, ui) {
+                // фикс позиции клона в браузерах, кроме хрома
+                if (!gCalendar._isChrome) {
+                    ui.position.top -= $(document).scrollTop();
+                    ui.position.left -= $(document).scrollLeft();
+                }
+            }
         })
     } else {
         this._wrapIntervals.addClass('gcalendar-notdraggable');
@@ -201,6 +219,38 @@ gCalendar.Action.prototype._calendarIntervalsHtmlFree = function() {
     return this;
 };
 
+gCalendar.Action.prototype._initFreeArea = function() {
+    var isBusyFreeArea = true,
+        i;
+
+    this._calDay = this._calendar._freeArea;
+
+    for (i = 0; i < this._calendar._intervalLength; i++) {
+        if (this._intervalCheckBusy(this._calDay.intervals[this._calDay.firstIntervalNumber + i])) {
+            this._calFirstInterval = this._calDay.intervals[this._calDay.firstIntervalNumber + i];
+            this._calendarIntervalsHtmlBusy();
+            return true;
+        }
+    }
+
+    if (isBusyFreeArea) {
+        console.log('freeArea полностью занята');
+    }
+};
+
+gCalendar.Action.prototype._intervalCheckBusy = function(interval) {
+    var i;
+
+    for (i = 0; i < this._numberIntervals; i++) {
+        // либо его нет в дне, либо он занят
+        if ((typeof this._calDay.intervals[interval.id + i] ==='undefined') || (typeof this._calDay.intervals[interval.id + i].actionId !== 'undefined')) {
+            return false;
+        }
+    }
+
+    return true;
+};
+
 // пробегает все интервалы в календаре, делает их droppable, если хватает места для текущего draggable элемента
 gCalendar.Action.prototype._initDroppable = function() {
     var daysArr, intArr, i, j, el;
@@ -218,6 +268,9 @@ gCalendar.Action.prototype._initDroppable = function() {
 
     // плюс делаем droppable все интервалы этого мероприятия, кроме первого
     this._initSelfDroppable();
+
+    // плюс делаем droppable все интервалы freeArea
+    this._initFreeAreaDroppable();
 };
 
 gCalendar.Action.prototype._initIntervalDroppable = function(interval) {
@@ -267,6 +320,17 @@ gCalendar.Action.prototype._initSelfDroppable = function() {
     }
 };
 
+gCalendar.Action.prototype._initFreeAreaDroppable = function() {
+    var freeAreaIntervals = this._calendar._freeArea.intervals,
+        i;
+
+    for (i in freeAreaIntervals) {
+        this._initIntervalDroppable(freeAreaIntervals[i]);
+    }
+
+    //this._freeArea.html
+};
+
 gCalendar.Action.prototype._startDroppable = function(interval) {
     interval.isDroppable = true;
     interval.html
@@ -286,10 +350,19 @@ gCalendar.Action.prototype._stopDroppable = function() {
     for (i in daysArr) {
         intArr = daysArr[i].intervals;
         for (j in intArr) {
-            if (intArr[j].isDroppable){
+            if (intArr[j].isDroppable) {
                 intArr[j].html.droppable('destroy');
                 intArr[j].isDroppable = false;
             }
+        }
+    }
+
+    // плюс интервалы в freeArea
+    intArr = this._calendar._freeArea.intervals;
+    for (j in intArr) {
+        if (intArr[j].isDroppable) {
+            intArr[j].html.droppable('destroy');
+            intArr[j].isDroppable = false;
         }
     }
 };
@@ -297,24 +370,45 @@ gCalendar.Action.prototype._stopDroppable = function() {
 gCalendar.Action.prototype._intervalOnDrop = function(interval) {
     var i;
 
-    this._wrapIntervals.remove();
+    this._wrapIntervals.detach();
     this._stopDroppable();
 
     for (i in this._intervals) {
         delete this._intervals[i].actionId;
     }
 
-    this._dateStart.setFullYear(interval.day.date.getFullYear());
-    this._dateStart.setMonth(interval.day.date.getMonth());
-    this._dateStart.setDate(interval.day.date.getDate());
+    if (!interval.isInFreeArea) {
+        this._dateStart.setFullYear(interval.day.date.getFullYear());
+        this._dateStart.setMonth(interval.day.date.getMonth());
+        this._dateStart.setDate(interval.day.date.getDate());
 
-    this._timeStart
-        .setHours(interval.time.getHours())
-        .setMinutes(interval.time.getMinutes());
+        this._timeStart
+            .setHours(interval.time.getHours())
+            .setMinutes(interval.time.getMinutes());
+    }
 
     this._calDay = interval.day;
     this._calFirstInterval = interval;
     this._calendarIntervalsBusy();
 
-    this.onChange();
+    if (!interval.isInFreeArea) {
+        this.onChange(this);
+    }
+};
+
+gCalendar.Action.prototype.getHtml = function() {
+    return this._html;
+};
+
+gCalendar.Action.prototype.getData = function() {
+    return this._data;
+};
+
+gCalendar.Action.prototype.getDateStart = function() {
+    var date = new Date(this._dateStart);
+
+    date.setHours(this._timeStart.getHours());
+    date.setMinutes(this._timeStart.getMinutes());
+
+    return date;
 };
