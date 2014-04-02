@@ -17,7 +17,7 @@ gCalendar._countIdAction = (function() {
         };
 })();
 
-gCalendar._isChrome = navigator.userAgent.indexOf('Chrome') !== -1;
+// gCalendar._isChrome = navigator.userAgent.indexOf('Chrome') !== -1;
 
 // сравнивает две даты
 gCalendar.equalDates = function(a, b) {
@@ -188,14 +188,16 @@ gCalendar.Action.prototype._calendarIntervalsHtmlBusy = function() {
             zIndex: 15,
             scroll: true,
             helper: 'clone',
-            appendTo: this._calendar._html.main,
+            appendTo: this._calendar._html.main/*,
             drag: function(ev, ui) {
                 // фикс позиции клона в браузерах, кроме хрома
                 if (!gCalendar._isChrome) {
                     ui.position.top -= $(document).scrollTop();
                     ui.position.left -= $(document).scrollLeft();
                 }
-            }
+            }*/
+
+            // TODO: Разобраться с багом!
         })
     } else {
         this._wrapIntervals.addClass('gcalendar-notdraggable');
@@ -396,8 +398,16 @@ gCalendar.Action.prototype._intervalOnDrop = function(interval) {
     }
 };
 
-gCalendar.Action.prototype.getHtml = function() {
+/*gCalendar.Action.prototype.getHtml = function() {
     return this._html;
+};*/
+
+gCalendar.Action.prototype.setHtml = function(html) {
+    this._wrapIntervals
+        .empty()
+        .append(html);
+
+    return this;
 };
 
 gCalendar.Action.prototype.getData = function() {
