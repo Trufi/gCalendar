@@ -422,3 +422,19 @@ gCalendar.Action.prototype.getDateStart = function() {
 
     return date;
 };
+
+gCalendar.Action.prototype.addClass = function(str) {
+    if (typeof str === 'string') {
+        this._wrapIntervals.addClass(str);
+    }
+    
+    return this;
+}; 
+
+gCalendar.Action.prototype.removeClass = function(str) {
+    if (typeof str === 'string') {
+        this._wrapIntervals.removeClass(str);
+    }
+
+    return this;
+}; 
