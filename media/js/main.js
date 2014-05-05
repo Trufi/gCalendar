@@ -35,7 +35,7 @@ $(function() {
 
     action3 = cal.addAction({
         dateStart: new Date(2014, 02, 25, 10, 00),
-        duration: 15,
+        duration: 147,
         html: '<div>Element on click</div>',
         onClick: function() {
             alert('click!');
