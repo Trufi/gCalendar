@@ -19,6 +19,7 @@ $(function() {
     action1 = cal.addAction({
         dateStart: new Date(2014, 02, 26, 9, 5),
         duration: 55,
+        html: 'Disable draggable',
         draggable: false
     });
 
@@ -26,7 +27,7 @@ $(function() {
         dateStart: new Date(2014, 02, 26, 10, 32),
         duration: 115,
         addClass: 'busy',
-        html: '<div>Busy</div>',
+        html: '<div>ElementOnChange</div>',
         onChange: function() {
             alert('change!');
         }
@@ -35,6 +36,7 @@ $(function() {
     action3 = cal.addAction({
         dateStart: new Date(2014, 02, 25, 10, 00),
         duration: 15,
+        html: 'ElementOnClick',
         onClick: function() {
             alert('click!');
         }
