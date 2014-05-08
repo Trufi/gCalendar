@@ -60,6 +60,12 @@ gCalendar.Action = function(param) {
             this.onChange = function() {};
         }
 
+        if (typeof param.onMoveToFreeArea === 'function') {
+            this.onMoveToFreeArea = param.onMoveToFreeArea;
+        } else {
+            this.onMoveToFreeArea = function() {};
+        }
+
         this._addClass = param.addClass || '';
         this._html = param.html || '';
 
@@ -370,31 +376,38 @@ gCalendar.Action.prototype._stopDroppable = function() {
 };
 
 gCalendar.Action.prototype._intervalOnDrop = function(interval) {
-    var i;
-
-    this._wrapIntervals.detach();
-    this._stopDroppable();
-
-    for (i in this._intervals) {
-        delete this._intervals[i].actionId;
-    }
+    var resultOnChange,
+        i;
 
     if (!interval.isInFreeArea) {
-        this._dateStart.setFullYear(interval.day.date.getFullYear());
-        this._dateStart.setMonth(interval.day.date.getMonth());
-        this._dateStart.setDate(interval.day.date.getDate());
-
-        this._timeStart
-            .setHours(interval.time.getHours())
-            .setMinutes(interval.time.getMinutes());
+        resultOnChange = this.onChange(this);
+    } else {
+        resultOnChange = this.onMoveToFreeArea(this);
     }
 
-    this._calDay = interval.day;
-    this._calFirstInterval = interval;
-    this._calendarIntervalsBusy();
+    if (resultOnChange !== false) {
+        this._wrapIntervals.detach();
+        this._stopDroppable();
 
-    if (!interval.isInFreeArea) {
-        this.onChange(this);
+        for (i in this._intervals) {
+            delete this._intervals[i].actionId;
+        }
+
+        if (!interval.isInFreeArea) {
+            this._dateStart.setFullYear(interval.day.date.getFullYear());
+            this._dateStart.setMonth(interval.day.date.getMonth());
+            this._dateStart.setDate(interval.day.date.getDate());
+
+            this._timeStart
+                .setHours(interval.time.getHours())
+                .setMinutes(interval.time.getMinutes());
+        }
+
+        this._calDay = interval.day;
+        this._calFirstInterval = interval;
+        this._calendarIntervalsBusy();
+    } else {
+        this._stopDroppable();
     }
 };
 

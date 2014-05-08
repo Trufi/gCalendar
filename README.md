@@ -32,6 +32,9 @@ Add action:
         onClick: function() {
             // click function
         },
+        onMoveToFreeArea: funciton() {
+            // function call when action moved to free area
+        },
         draggable: true
     });
 ```
