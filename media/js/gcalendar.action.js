@@ -154,6 +154,7 @@ gCalendar.Action.prototype._calendarIntervalsBusy = function() {
         this._calendarIntervalsHtmlBusy();
     } else {
         console.log('Время для мероприятия занято!');
+        this._initFreeArea();
     }
 };
 
@@ -377,10 +378,20 @@ gCalendar.Action.prototype._stopDroppable = function() {
 
 gCalendar.Action.prototype._intervalOnDrop = function(interval) {
     var resultOnChange,
+        newDateStart = new Date(this._dateStart),
+        newTimeStart = new gCalendar.Time(this._timeStart),
         i;
 
     if (!interval.isInFreeArea) {
-        resultOnChange = this.onChange(this);
+        newDateStart.setFullYear(interval.day.date.getFullYear());
+        newDateStart.setMonth(interval.day.date.getMonth());
+        newDateStart.setDate(interval.day.date.getDate());
+
+        newTimeStart
+            .setHours(interval.time.getHours())
+            .setMinutes(interval.time.getMinutes());
+
+        resultOnChange = this.onChange(this, newDateStart, newTimeStart);
     } else {
         resultOnChange = this.onMoveToFreeArea(this);
     }
@@ -394,13 +405,8 @@ gCalendar.Action.prototype._intervalOnDrop = function(interval) {
         }
 
         if (!interval.isInFreeArea) {
-            this._dateStart.setFullYear(interval.day.date.getFullYear());
-            this._dateStart.setMonth(interval.day.date.getMonth());
-            this._dateStart.setDate(interval.day.date.getDate());
-
-            this._timeStart
-                .setHours(interval.time.getHours())
-                .setMinutes(interval.time.getMinutes());
+            this._dateStart = newDateStart;
+            this._timeStart = newTimeStart;
         }
 
         this._calDay = interval.day;
