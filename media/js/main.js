@@ -118,5 +118,5 @@ $(function() {
     a2 = cal2.addAction({
         dateStart: new Date(2014, 02, 26, 12, 00),
         duration: 350
-    });
+    }); 
 });
