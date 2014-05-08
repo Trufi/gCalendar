@@ -33,6 +33,41 @@ $(function() {
         }
     });
 
+    cal.addAction({
+        dateStart: new Date(2014, 02, 28, 10, 32),
+        duration: 75,
+        addClass: 'blue',
+        html: '<div>Element on move to free area</div>',
+        onMoveToFreeArea: function() {
+            alert('moved!');
+        }
+    });
+
+    cal.addAction({
+        dateStart: new Date(2014, 02, 29, 8, 32),
+        duration: 75,
+        addClass: 'blue',
+        html: '<div>onChange return false</div>',
+        onMoveToFreeArea: function() {
+            alert('moved!');
+        },
+        onChange: function() {
+            return false;
+        }
+    });
+
+    cal.addAction({
+        dateStart: new Date(2014, 02, 29, 13, 32),
+        duration: 100,
+        html: '<div>on move to free area return false</div>',
+        onMoveToFreeArea: function() {
+            return false;
+        },
+        onChange: function() {
+            alert('change');
+        }
+    });
+
     action3 = cal.addAction({
         dateStart: new Date(2014, 02, 25, 10, 00),
         duration: 147,
@@ -53,6 +88,7 @@ $(function() {
     });
 
     cal.addAction({
+        html: '<div>action without date</div>',
         duration: 150
     });
 
